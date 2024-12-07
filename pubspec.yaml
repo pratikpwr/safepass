@@ -16,13 +16,16 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
   fluttertoast: ^8.2.8
+  flutter_svg: ^2.0.16
 
   bloc: ^8.1.4
   flutter_bloc: ^8.1.6
 
   flutter_secure_storage: ^9.2.2
   encrypt: ^5.0.3
+  local_auth: ^2.3.0
 
+  uuid: ^4.5.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.5
@@ -41,7 +44,6 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/icons/
 

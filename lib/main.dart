@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:safepass/src/core/utils/secure_storage.dart';
 
 import 'src/core/ui/theme.dart';
 import 'src/core/ui/util.dart';
@@ -21,6 +22,8 @@ void main() async {
   Hive.registerAdapter(PasswordAdapter());
   Hive.registerAdapter(PasswordEntryAdapter());
 
+  await SecureStorage.init();
+
   runApp(MyApp());
 }
 
@@ -39,6 +42,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'SecuPass',
         theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+        themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
         home: BlocProvider(
           create: (_) => PasswordBloc()..add(FetchPasswordsEvent()),

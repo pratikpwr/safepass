@@ -27,23 +27,18 @@ class PasswordEntry {
     this.note,
   });
 
-  factory PasswordEntry.fromEntity(PasswordEntry entry) {
-    return PasswordEntry(
-      id: entry.id,
-      username: entry.username,
-      password: entry.password,
-      site: entry.site,
-      note: entry.note,
-    );
-  }
-
-  PasswordEntry toEntity() {
+  PasswordEntry copyWith({
+    String? username,
+    String? password,
+    String? site,
+    String? note,
+  }) {
     return PasswordEntry(
       id: id,
-      username: username,
-      password: password,
-      site: site,
-      note: note,
+      username: username ?? this.username,
+      password: password ?? this.password,
+      site: site ?? this.site,
+      note: note ?? this.note,
     );
   }
 }

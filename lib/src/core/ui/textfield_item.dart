@@ -44,7 +44,7 @@ class LabelledTextFieldItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (title == null) {
-      return _buildTextField();
+      return _buildTextField(context);
     } else {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,13 +54,13 @@ class LabelledTextFieldItem extends StatelessWidget {
             style: context.theme.textTheme.titleMedium,
           ),
           padding4,
-          _buildTextField(),
+          _buildTextField(context),
         ],
       );
     }
   }
 
-  Widget _buildTextField() {
+  Widget _buildTextField(BuildContext context) {
     return TextFormField(
       enabled: enabled,
       controller: controller,
@@ -69,6 +69,7 @@ class LabelledTextFieldItem extends StatelessWidget {
       decoration: InputDecoration(
         isDense: true,
         hintText: hintText,
+        hintStyle: context.theme.textTheme.bodyLarge,
         border: OutlineInputBorder(
           borderSide: BorderSide(),
           borderRadius: BorderRadius.circular(8),

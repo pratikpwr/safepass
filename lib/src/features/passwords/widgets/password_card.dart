@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 
 import '../../../core/extension/context_extension.dart';
 import '../../../core/ui/padding.dart';
 import '../models/password.dart';
 import '../screens/password_entries_screen.dart';
 
-class PasswordCard extends StatelessWidget {
+class PasswordCard extends StatefulWidget {
   const PasswordCard({
     super.key,
     required this.password,
@@ -14,15 +15,43 @@ class PasswordCard extends StatelessWidget {
   final Password password;
 
   @override
+  State<PasswordCard> createState() => _PasswordCardState();
+}
+
+class _PasswordCardState extends State<PasswordCard> {
+  final LocalAuthentication auth = LocalAuthentication();
+
+  Future<bool> _authenticate() async {
+    try {
+      bool authenticated = await auth.authenticate(
+        localizedReason: 'Please authenticate to see passwords',
+        options: const AuthenticationOptions(
+          biometricOnly: false,
+          stickyAuth: true,
+        ),
+      );
+      return authenticated;
+    } catch (e) {
+      print("Authentication error: $e");
+      return false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PasswordDetailScreen(password: password),
-          ),
-        );
+        _authenticate().then((result) {
+          if (result) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    PasswordDetailScreen(password: widget.password),
+              ),
+            );
+          }
+        });
       },
       child: Card(
         child: Padding(
@@ -39,20 +68,22 @@ class PasswordCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Text(
-                  password.title[0],
+                  widget.password.title.isNotEmpty
+                      ? widget.password.title[0]
+                      : "",
                   style: context.theme.textTheme.headlineMedium,
                 ),
               ),
               padding12,
               Expanded(
                 child: Text(
-                  password.title,
+                  widget.password.title,
                   style: context.theme.textTheme.titleMedium,
                 ),
               ),
-              if (password.list.length > 1) ...[
+              if (widget.password.list.length > 1) ...[
                 Text(
-                  password.list.length.toString(),
+                  widget.password.list.length.toString(),
                   style: context.theme.textTheme.bodyLarge,
                 ),
                 padding8,

@@ -4,7 +4,6 @@ import 'password_entry.dart';
 
 part 'password.g.dart';
 
-
 @HiveType(typeId: 1)
 class Password {
   @HiveField(0)
@@ -22,21 +21,14 @@ class Password {
     required this.list,
   });
 
-  factory Password.fromEntity(Password password) {
-    return Password(
-      id: password.id,
-      title: password.title,
-      list: password.list
-          .map((entry) => PasswordEntry.fromEntity(entry))
-          .toList(),
-    );
-  }
-
-  Password toEntity() {
+  Password copyWith({
+    String? title,
+    List<PasswordEntry>? list,
+  }) {
     return Password(
       id: id,
-      title: title,
-      list: list.map((entry) => entry.toEntity()).toList(),
+      title: title ?? this.title,
+      list: list ?? this.list,
     );
   }
 }
