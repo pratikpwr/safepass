@@ -81,9 +81,9 @@ class _PasswordCardState extends State<PasswordCard> {
                   style: context.theme.textTheme.titleMedium,
                 ),
               ),
-              if (widget.password.list.length > 1) ...[
+              if (widget.password.entries.length > 1) ...[
                 Text(
-                  widget.password.list.length.toString(),
+                  widget.password.entries.length.toString(),
                   style: context.theme.textTheme.bodyLarge,
                 ),
                 padding8,

@@ -7,28 +7,34 @@ part 'password.g.dart';
 @HiveType(typeId: 1)
 class Password {
   @HiveField(0)
-  final String id; // Unique string ID for each password group
+  final String id;
 
   @HiveField(1)
   final String title;
 
   @HiveField(2)
-  final List<PasswordEntry> list;
+  final List<String> entries;
+
+  @HiveField(3)
+  final bool isFavourite;
 
   Password({
     required this.id,
     required this.title,
-    required this.list,
+    required this.entries,
+    this.isFavourite = false,
   });
 
   Password copyWith({
     String? title,
-    List<PasswordEntry>? list,
+    List<String>? entries,
+    bool? isFavourite,
   }) {
     return Password(
       id: id,
       title: title ?? this.title,
-      list: list ?? this.list,
+      entries: entries ?? this.entries,
+      isFavourite: isFavourite ?? this.isFavourite,
     );
   }
 }

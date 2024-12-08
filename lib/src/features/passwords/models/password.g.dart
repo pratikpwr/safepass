@@ -19,20 +19,23 @@ class PasswordAdapter extends TypeAdapter<Password> {
     return Password(
       id: fields[0] as String,
       title: fields[1] as String,
-      list: (fields[2] as List).cast<PasswordEntry>(),
+      entries: (fields[2] as List).cast<String>(),
+      isFavourite: fields[3] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Password obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.list);
+      ..write(obj.entries)
+      ..writeByte(3)
+      ..write(obj.isFavourite);
   }
 
   @override

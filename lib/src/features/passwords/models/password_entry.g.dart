@@ -21,6 +21,7 @@ class PasswordEntryAdapter extends TypeAdapter<PasswordEntry> {
       username: fields[1] as String,
       password: fields[2] as String,
       site: fields[3] as String,
+      parentId: fields[5] as String,
       note: fields[4] as String?,
     );
   }
@@ -28,7 +29,7 @@ class PasswordEntryAdapter extends TypeAdapter<PasswordEntry> {
   @override
   void write(BinaryWriter writer, PasswordEntry obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class PasswordEntryAdapter extends TypeAdapter<PasswordEntry> {
       ..writeByte(3)
       ..write(obj.site)
       ..writeByte(4)
-      ..write(obj.note);
+      ..write(obj.note)
+      ..writeByte(5)
+      ..write(obj.parentId);
   }
 
   @override
