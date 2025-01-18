@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:safepass/src/core/utils/utils.dart';
 
 import '../../../core/extension/context_extension.dart';
 import '../../../core/ui/padding.dart';
@@ -19,29 +19,11 @@ class PasswordCard extends StatefulWidget {
 }
 
 class _PasswordCardState extends State<PasswordCard> {
-  final LocalAuthentication auth = LocalAuthentication();
-
-  Future<bool> _authenticate() async {
-    try {
-      bool authenticated = await auth.authenticate(
-        localizedReason: 'Please authenticate to see passwords',
-        options: const AuthenticationOptions(
-          biometricOnly: false,
-          stickyAuth: true,
-        ),
-      );
-      return authenticated;
-    } catch (e) {
-      print("Authentication error: $e");
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _authenticate().then((result) {
+        authenticateUser().then((result) {
           if (result) {
             Navigator.push(
               context,

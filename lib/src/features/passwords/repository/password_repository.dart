@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:safepass/src/core/utils/password_exporter.dart';
 
 import '../../../core/errors/failures.dart';
 import '../../../core/utils/utils.dart';
@@ -20,6 +22,8 @@ abstract class PasswordRepository {
   Future<Either<Failure, void>> markFavourite({
     required String passId,
   });
+
+  Future<Either<Failure, void>> exportDataToExcel();
 }
 
 class PasswordRepositoryImpl implements PasswordRepository {
@@ -62,4 +66,15 @@ class PasswordRepositoryImpl implements PasswordRepository {
   @override
   Future<Either<Failure, void>> markFavourite({required String passId}) =>
       returnRightOrLeft(() => passwordDataSource.markFavourite(passId));
+
+  @override
+  Future<Either<Failure, dynamic>> exportDataToExcel() =>
+      returnRightOrLeft(() async {
+        final passes = await passwordDataSource.getAllPasswords();
+        final entries = await passwordEntryDataSource.getAllPasswordEntries();
+
+        await PasswordExporter(passwords: passes, passwordEntries: entries)
+            .exportToExcel();
+        Fluttertoast.showToast(msg: "Exported!!");
+      });
 }

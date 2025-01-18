@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:safepass/src/core/ui/padding.dart';
+import 'package:safepass/src/core/utils/utils.dart';
 import 'package:safepass/src/features/password_generator/screens/password_generator_screen.dart';
+import 'package:safepass/src/features/passwords/repository/password_repository.dart';
 
+import '../../../core/app/injection_container.dart';
 import '../../../core/extension/context_extension.dart';
 import '../blocs/passwords_bloc/password_bloc.dart';
 import '../widgets/password_card.dart';
@@ -135,7 +138,19 @@ class PasswordsScreen extends StatelessWidget {
                   });
                 },
                 child: const Icon(Icons.auto_awesome),
-              )
+              ),
+              padding16,
+              FloatingActionButton(
+                onPressed: () {
+                  authenticateUser().then((result) {
+                    if (result) {
+                      // todo: export warning!!!
+                      sl<PasswordRepository>().exportDataToExcel();
+                    }
+                  });
+                },
+                child: const Icon(Icons.save),
+              ),
             ],
           ),
         );
