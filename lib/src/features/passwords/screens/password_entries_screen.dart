@@ -235,11 +235,13 @@ class _PasswordEntryCardState extends State<PasswordEntryCard> {
                     ),
                   ],
                 ),
-                padding8,
-                Text(
-                  'Note: ${widget.entry.note ?? "no note"}',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+                if (widget.entry.note?.trim().isNotEmpty ?? false) ...[
+                  padding8,
+                  Text(
+                    'Note: ${widget.entry.note!}',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ]
               ],
             ),
           ),

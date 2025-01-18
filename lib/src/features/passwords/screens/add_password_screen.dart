@@ -3,20 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:safepass/src/core/extension/context_extension.dart';
 import 'package:safepass/src/core/ui/padding.dart';
 import 'package:safepass/src/core/ui/textfield_item.dart';
+import 'package:safepass/src/core/utils/password_generator.dart';
 import 'package:safepass/src/core/utils/secure_storage.dart';
 import 'package:safepass/src/features/passwords/blocs/passwords_bloc/password_bloc.dart';
-import 'package:safepass/src/features/passwords/models/password.dart';
 import 'package:safepass/src/features/passwords/models/password_entry.dart';
 import 'package:uuid/uuid.dart';
 
 class AddPasswordScreen extends StatefulWidget {
   const AddPasswordScreen({
     super.key,
+    this.password,
     // this.passwordToUpdate,
   });
 
   // /// password to be updated and its entry
   // final Map<Password, int>? passwordToUpdate;
+  final String? password;
 
   @override
   State<AddPasswordScreen> createState() => _AddPasswordScreenState();
@@ -30,6 +32,12 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
   final _noteController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    _passwordController.text = widget.password ?? "";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +104,18 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
                     }
                     return null;
                   },
+                  suffix: IconButton(
+                    onPressed: () {
+                      final result = PasswordGenerator.generatePassword();
+
+                      setState(() {
+                        _passwordController.text = result;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.auto_awesome,
+                    ),
+                  ),
                 ),
                 padding4,
                 Text(
@@ -130,26 +150,6 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
       final encryptedPassword =
           SecureStorage().encryptData(_passwordController.text);
 
-      // Password pass;
-      // if (widget.passwordToUpdate != null) {
-      //   final password = widget.passwordToUpdate!.keys.first;
-      //   final entry = password.entries[widget.passwordToUpdate!.values.first];
-      //   pass = password.copyWith(
-      //     title: _titleController.text,
-      //     entries: password.entries.map((item) {
-      //       if (item.id == entry.id) {
-      //         return item.copyWith(
-      //           username: _usernameController.text,
-      //           password: encryptedPassword,
-      //           site: _siteController.text,
-      //           note:
-      //               _noteController.text.isEmpty ? null : _noteController.text,
-      //         );
-      //       }
-      //       return item;
-      //     }).toList(),
-      //   );
-      // } else {
       var uuid = Uuid();
 
       final entry = PasswordEntry(
@@ -163,10 +163,19 @@ class _AddPasswordScreenState extends State<AddPasswordScreen> {
 
       context.read<PasswordBloc>().add(AddPasswordEvent(
             entry: entry,
-            title: _titleController.text,
+            title: _titleController.text.isNotEmpty
+                ? _titleController.text
+                : _siteController.text,
           ));
 
-      Navigator.pop(context);
+      Future.delayed(Duration(milliseconds: 300)).then((_) {
+        if (widget.password != null) {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        } else {
+          Navigator.pop(context);
+        }
+      });
     }
   }
 }

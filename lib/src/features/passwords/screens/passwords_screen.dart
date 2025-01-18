@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:safepass/src/core/ui/padding.dart';
+import 'package:safepass/src/features/password_generator/screens/password_generator_screen.dart';
 
 import '../../../core/extension/context_extension.dart';
 import '../blocs/passwords_bloc/password_bloc.dart';
@@ -104,18 +106,37 @@ class PasswordsScreen extends StatelessWidget {
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddPasswordScreen(),
-                ),
-              ).then((_) {
-                context.read<PasswordBloc>().add(FetchPasswordsEvent());
-              });
-            },
-            child: const Icon(Icons.add),
+          floatingActionButton: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddPasswordScreen(),
+                    ),
+                  ).then((_) {
+                    context.read<PasswordBloc>().add(FetchPasswordsEvent());
+                  });
+                },
+                child: const Icon(Icons.add),
+              ),
+              padding16,
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PasswordGeneratorScreen(),
+                    ),
+                  ).then((_) {
+                    context.read<PasswordBloc>().add(FetchPasswordsEvent());
+                  });
+                },
+                child: const Icon(Icons.auto_awesome),
+              )
+            ],
           ),
         );
       }),
