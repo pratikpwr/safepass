@@ -1,11 +1,9 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:safepass/src/core/app/injection_container.dart';
+import 'package:safepass/src/core/extension/context_extension.dart';
 
-import '../../../core/app/injection_container.dart';
-import '../../../core/extension/context_extension.dart';
 import '../../../core/ui/padding.dart';
 import '../../../core/utils/utils.dart';
 import '../../password_generator/screens/password_generator_screen.dart';
@@ -232,13 +230,11 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
   }
 
   void _showOverlay(BuildContext ctx) {
-    // Find the render box of the options button
     final RenderBox? renderBox =
         _optionsButtonKey.currentContext?.findRenderObject() as RenderBox?;
 
     if (renderBox == null) return;
 
-    // Calculate position
     final Size size = renderBox.size;
     final Offset position = renderBox.localToGlobal(Offset.zero);
 
@@ -284,37 +280,11 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                         "Import from Excel",
                         Icons.file_present_rounded,
                         () async {
-                          Future.delayed(Duration(milliseconds: 100)).then((_) {
+                          Future.delayed(Duration(milliseconds: 500)).then((_) {
                             _removeOverlay();
                           });
 
-                          FilePickerResult? result =
-                              await FilePicker.platform.pickFiles(
-                            type: FileType.custom,
-                            allowedExtensions: ['xlsx', 'xls'],
-                          );
-
-                          if (result != null) {
-                            final filePath = result.files.single.path;
-                            if (filePath != null) {
-                              final result = await sl<PasswordRepository>()
-                                  .importDataFromExcel(filePath);
-
-                              result.fold(
-                                (l) => Fluttertoast.showToast(
-                                    msg: "Failed to import data"),
-                                (r) {
-                                  ctx
-                                      .read<PasswordBloc>()
-                                      .add(FetchPasswordsEvent());
-                                  Fluttertoast.showToast(
-                                      msg: "Imported Successfully!!");
-                                },
-                              );
-                            } else {
-                              Fluttertoast.showToast(msg: "Failed to get file");
-                            }
-                          }
+                          ctx.read<PasswordBloc>().add(ImportPasswordsEvent());
                         },
                       ),
                       _buildMenuItem(

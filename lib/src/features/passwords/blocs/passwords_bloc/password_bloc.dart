@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../models/password.dart';
@@ -19,6 +21,7 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     on<FetchFavouritePasswordsEvent>(_onFetchFavouritePasswords);
     on<AddPasswordEvent>(_onAddPassword);
     on<SearchPassword>(_onSearchPassword);
+    on<ImportPasswordsEvent>(_onImportPasswordsEvent);
   }
 
   Future<void> _onSearchPassword(
@@ -35,6 +38,33 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
           a.title.toLowerCase().compareTo(b.title.toLowerCase()) ?? 0);
       emit(PasswordLoaded(results));
     });
+  }
+
+  Future<void> _onImportPasswordsEvent(
+    ImportPasswordsEvent event,
+    Emitter<PasswordState> emit,
+  ) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx', 'xls'],
+    );
+
+    if (result != null) {
+      final filePath = result.files.single.path;
+      if (filePath != null) {
+        final result = await repository.importDataFromExcel(filePath);
+
+        result.fold(
+          (l) => Fluttertoast.showToast(msg: "Failed to import data"),
+          (r) {
+            add(FetchPasswordsEvent());
+            Fluttertoast.showToast(msg: "Imported Successfully!!");
+          },
+        );
+      } else {
+        Fluttertoast.showToast(msg: "Failed to get file");
+      }
+    }
   }
 
   Future<void> _onFetchPasswords(

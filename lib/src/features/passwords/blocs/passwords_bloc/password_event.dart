@@ -22,3 +22,5 @@ class AddPasswordEvent extends PasswordEvent {
     required this.entry,
   });
 }
+
+class ImportPasswordsEvent extends PasswordEvent {}
