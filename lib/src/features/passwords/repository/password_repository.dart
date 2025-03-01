@@ -12,6 +12,8 @@ import '../models/password_entry.dart';
 abstract class PasswordRepository {
   Future<Either<Failure, List<Password>>> getPasswords();
 
+  Future<Either<Failure, List<Password>>> searchPassword(String query);
+
   Future<Either<Failure, List<Password>>> getFavouritePasswords();
 
   Future<Either<Failure, void>> addPassword({
@@ -66,6 +68,10 @@ class PasswordRepositoryImpl implements PasswordRepository {
       returnRightOrLeft(() => passwordDataSource.getAllPasswords());
 
   @override
+  Future<Either<Failure, List<Password>>> searchPassword(String query) =>
+      returnRightOrLeft(() => passwordDataSource.searchPasswords(query));
+
+  @override
   Future<Either<Failure, void>> markFavourite({required String passId}) =>
       returnRightOrLeft(() => passwordDataSource.markFavourite(passId));
 
@@ -87,8 +93,9 @@ class PasswordRepositoryImpl implements PasswordRepository {
         final data = await PasswordExporter().processImportedData(importedData);
 
         await passwordDataSource.addAll(data['passwords'] as List<Password>);
-        await passwordEntryDataSource.addAll(data['entries'] as List<PasswordEntry>);
-        Fluttertoast.showToast(msg: "Imported Successfully!!");
+        await passwordEntryDataSource
+            .addAll(data['entries'] as List<PasswordEntry>);
+
         return true;
       });
 }

@@ -14,6 +14,15 @@ class PasswordDataSource {
     return passwords;
   }
 
+  Future<List<Password>> searchPasswords(String query) async {
+    final Box<Password> passwordBox = await Hive.openBox('passwordBox');
+    final passwords = passwordBox.values.cast<Password>().toList();
+    await passwordBox.close();
+    return passwords
+        .where((pass) => pass.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  }
+
   Future<Password> getPasswordById(String id) async {
     final Box<Password> passwordBox = await Hive.openBox('passwordBox');
     final password =

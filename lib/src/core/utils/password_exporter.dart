@@ -33,7 +33,7 @@ class PasswordExporter {
 
       // Extract headers from the first row
       final headers = <String>[];
-      for (var i = 0; i < sheet.maxRows; i++) {
+      for (var i = 0; i < sheet.maxColumns; i++) {
         final cell =
             sheet.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0));
         if (cell.value == null) break;
@@ -41,7 +41,13 @@ class PasswordExporter {
       }
 
       // Verify required columns exist
-      final requiredColumns = ['Title', 'Username', 'Password', 'Site', 'Notes'];
+      final requiredColumns = [
+        'Title',
+        'Username',
+        'Password',
+        'Site',
+        'Notes'
+      ];
       for (final column in requiredColumns) {
         if (!headers.contains(column.toLowerCase())) {
           throw Exception('Required column "$column" not found in Excel file');
@@ -90,7 +96,7 @@ class PasswordExporter {
     final groupedByTitle = <String, List<Map<String, dynamic>>>{};
 
     for (final entry in importedData) {
-      final title = entry['Title'] ?? 'Uncategorized';
+      final title = entry['title'] ?? 'Uncategorized';
       if (!groupedByTitle.containsKey(title)) {
         groupedByTitle[title] = [];
       }
@@ -100,10 +106,11 @@ class PasswordExporter {
     // Create Password and PasswordEntry objects
     final passwords = <Password>[];
     final entries = <PasswordEntry>[];
+    var uuid = Uuid();
 
     for (final title in groupedByTitle.keys) {
       // Create a Password (category) for this title
-      var uuid = Uuid();
+
       final passwordId = uuid.v4();
       final password = Password(
         id: passwordId,

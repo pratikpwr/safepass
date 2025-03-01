@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:safepass/src/core/app/injection_container.dart';
-import 'package:safepass/src/core/ui/padding.dart';
-import 'package:safepass/src/core/utils/utils.dart';
-import 'package:safepass/src/features/password_generator/screens/password_generator_screen.dart';
-import 'package:safepass/src/features/passwords/repository/password_repository.dart';
 
+import '../../../core/app/injection_container.dart';
 import '../../../core/extension/context_extension.dart';
+import '../../../core/ui/padding.dart';
+import '../../../core/utils/utils.dart';
+import '../../password_generator/screens/password_generator_screen.dart';
 import '../blocs/passwords_bloc/password_bloc.dart';
+import '../repository/password_repository.dart';
 import '../widgets/password_card.dart';
 import 'add_password_screen.dart';
 
@@ -32,100 +32,97 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
       child: Builder(builder: (context) {
         return Scaffold(
           body: SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  title: const Text('SafePass'),
-                  floating: true,
-                  centerTitle: true,
-                  actions: [
-                    IconButton(
-                      key: _optionsButtonKey,
-                      onPressed: () {
-                        _showOverlay(context);
-                      },
-                      icon: Icon(Icons.more_vert_rounded),
-                    )
-                  ],
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  sliver: BlocBuilder<PasswordBloc, PasswordState>(
-                    builder: (context, state) {
-                      if (state is PasswordLoading) {
-                        return SliverFillRemaining(
-                          hasScrollBody: false,
-                          child:
-                              const Center(child: CircularProgressIndicator()),
-                        );
-                      }
-                      if (state is PasswordErrorState) {
-                        return SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Center(
-                            child: Text(
-                              state.failure.toString(),
-                            ),
-                          ),
-                        );
-                      }
-                      if (state is PasswordLoaded) {
-                        if (state.passwords.isEmpty) {
+            child: RefreshIndicator(
+              onRefresh: () async {
+                context.read<PasswordBloc>().add(FetchPasswordsEvent());
+              },
+              child: CustomScrollView(
+                slivers: [
+                  buildSliverAppBar(context),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    sliver: BlocBuilder<PasswordBloc, PasswordState>(
+                      builder: (context, state) {
+                        if (state is PasswordLoading) {
+                          return SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: const Center(
+                                child: CircularProgressIndicator()),
+                          );
+                        }
+                        if (state is PasswordErrorState) {
                           return SliverFillRemaining(
                             hasScrollBody: false,
                             child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/mobile_encrypt.svg',
-                                    height: 200,
-                                    // width: 100,
-                                    fit: BoxFit.fitHeight,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        16, 16, 16, 32),
-                                    child: Text(
-                                      "Create, save, and manage your passwords so you can easily sign in to sites and apps.",
-                                      textAlign: TextAlign.center,
-                                      style: context.theme.textTheme.bodyLarge,
-                                    ),
-                                  )
-                                ],
+                              child: Text(
+                                state.failure.toString(),
                               ),
                             ),
                           );
                         }
-                        return SliverList.builder(
-                          itemCount: state.passwords.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                                child: Text(
-                                  "Create, save, and manage your passwords so you can easily sign in to sites and apps.",
-                                  textAlign: TextAlign.center,
-                                  style: context.theme.textTheme.bodyLarge,
+                        if (state is PasswordLoaded) {
+                          if (state.passwords.isEmpty) {
+                            return SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/icons/mobile_encrypt.svg',
+                                      height: 200,
+                                      // width: 100,
+                                      fit: BoxFit.fitHeight,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 16, 16, 32),
+                                      child: Text(
+                                        "Create, save, and manage your passwords so you can easily sign in to sites and apps.",
+                                        textAlign: TextAlign.center,
+                                        style:
+                                            context.theme.textTheme.bodyLarge,
+                                      ),
+                                    )
+                                  ],
                                 ),
+                              ),
+                            );
+                          }
+                          return SliverList.builder(
+                            itemCount: state.passwords.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                if (searchActive) {
+                                  return SizedBox.shrink();
+                                }
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  child: Text(
+                                    "Create, save, and manage your passwords so you can easily sign in to sites and apps.",
+                                    textAlign: TextAlign.center,
+                                    style: context.theme.textTheme.bodyLarge,
+                                  ),
+                                );
+                              }
+                              return PasswordCard(
+                                password: state.passwords[index - 1],
                               );
-                            }
-                            return PasswordCard(
-                                password: state.passwords[index - 1]);
-                          },
+                            },
+                          );
+                        }
+                        return SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: const Center(
+                            child: Text('No data available'),
+                          ),
                         );
-                      }
-                      return SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: const Center(
-                          child: Text('No data available'),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              ],
+                      },
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           floatingActionButton: Row(
@@ -165,7 +162,76 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     );
   }
 
-  void _showOverlay(ctx) {
+  bool searchActive = false;
+  final _searchController = TextEditingController();
+
+  SliverAppBar buildSliverAppBar(BuildContext context) {
+    return SliverAppBar(
+      title: const Text('SafePass'),
+      floating: true,
+      centerTitle: true,
+      bottom: searchActive
+          ? PreferredSize(
+              preferredSize: Size(double.infinity, 56),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12)
+                    .copyWith(bottom: 12),
+                child: TextField(
+                  controller: _searchController,
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      context.read<PasswordBloc>().add(SearchPassword(value));
+                    }
+                  },
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        context.read<PasswordBloc>().add(FetchPasswordsEvent());
+                        _searchController.clear();
+                        setState(() {
+                          searchActive = false;
+                        });
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+                  ),
+                ),
+              ),
+            )
+          : null,
+      actions: [
+        if (!searchActive)
+          IconButton(
+            onPressed: () {
+              setState(() {
+                searchActive = true;
+              });
+            },
+            icon: Icon(Icons.search_rounded),
+          ),
+        IconButton(
+          key: _optionsButtonKey,
+          onPressed: () {
+            _showOverlay(context);
+          },
+          icon: Icon(Icons.more_vert_rounded),
+        )
+      ],
+    );
+  }
+
+  void _showOverlay(BuildContext ctx) {
     // Find the render box of the options button
     final RenderBox? renderBox =
         _optionsButtonKey.currentContext?.findRenderObject() as RenderBox?;
@@ -218,6 +284,10 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                         "Import from Excel",
                         Icons.file_present_rounded,
                         () async {
+                          Future.delayed(Duration(milliseconds: 100)).then((_) {
+                            _removeOverlay();
+                          });
+
                           FilePickerResult? result =
                               await FilePicker.platform.pickFiles(
                             type: FileType.custom,
@@ -233,18 +303,18 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                               result.fold(
                                 (l) => Fluttertoast.showToast(
                                     msg: "Failed to import data"),
-                                (r) => ctx
-                                    .read<PasswordBloc>()
-                                    .add(FetchPasswordsEvent()),
+                                (r) {
+                                  ctx
+                                      .read<PasswordBloc>()
+                                      .add(FetchPasswordsEvent());
+                                  Fluttertoast.showToast(
+                                      msg: "Imported Successfully!!");
+                                },
                               );
                             } else {
                               Fluttertoast.showToast(msg: "Failed to get file");
                             }
-                          } else {
-                            Fluttertoast.showToast(msg: "Failed to get file");
                           }
-
-                          _removeOverlay();
                         },
                       ),
                       _buildMenuItem(

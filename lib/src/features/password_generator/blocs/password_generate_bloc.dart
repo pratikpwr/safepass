@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:safepass/src/core/utils/password_generator.dart';
 
 part 'password_generate_event.dart';
-
 part 'password_generate_state.dart';
 
 class PasswordGenerateBloc

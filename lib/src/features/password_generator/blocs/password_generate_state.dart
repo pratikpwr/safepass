@@ -7,7 +7,6 @@ class PasswordGenerateState {
 
   const PasswordGenerateState({
     this.password = '',
-
     this.isSaved = false,
   });
 

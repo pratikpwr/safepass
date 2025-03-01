@@ -1,7 +1,5 @@
 import 'package:hive/hive.dart';
 
-import 'password_entry.dart';
-
 part 'password.g.dart';
 
 @HiveType(typeId: 1)

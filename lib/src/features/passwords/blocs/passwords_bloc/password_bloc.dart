@@ -18,6 +18,23 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     on<FetchPasswordsEvent>(_onFetchPasswords);
     on<FetchFavouritePasswordsEvent>(_onFetchFavouritePasswords);
     on<AddPasswordEvent>(_onAddPassword);
+    on<SearchPassword>(_onSearchPassword);
+  }
+
+  Future<void> _onSearchPassword(
+    SearchPassword event,
+    Emitter<PasswordState> emit,
+  ) async {
+    emit(PasswordLoading());
+    final result = await repository.searchPassword(event.query);
+
+    result.fold((failure) {
+      emit(PasswordErrorState(failure));
+    }, (results) {
+      results.sort((a, b) =>
+          a.title.toLowerCase().compareTo(b.title.toLowerCase()) ?? 0);
+      emit(PasswordLoaded(results));
+    });
   }
 
   Future<void> _onFetchPasswords(

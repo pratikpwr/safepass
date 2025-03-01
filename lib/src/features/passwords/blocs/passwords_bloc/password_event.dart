@@ -5,6 +5,12 @@ sealed class PasswordEvent {}
 
 class FetchPasswordsEvent extends PasswordEvent {}
 
+class SearchPassword extends PasswordEvent {
+  final String query;
+
+  SearchPassword(this.query);
+}
+
 class FetchFavouritePasswordsEvent extends PasswordEvent {}
 
 class AddPasswordEvent extends PasswordEvent {

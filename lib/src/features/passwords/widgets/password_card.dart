@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:safepass/src/core/extension/string_extension.dart';
 import 'package:safepass/src/core/utils/utils.dart';
+import 'package:safepass/src/features/passwords/blocs/passwords_bloc/password_bloc.dart';
 
 import '../../../core/extension/context_extension.dart';
 import '../../../core/ui/padding.dart';
@@ -32,7 +34,9 @@ class _PasswordCardState extends State<PasswordCard> {
                 builder: (context) =>
                     PasswordDetailScreen(password: widget.password),
               ),
-            );
+            ).then((_) {
+              context.read<PasswordBloc>().add(FetchPasswordsEvent());
+            });
           }
         });
       },
