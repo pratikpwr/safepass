@@ -36,13 +36,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View
-        .of(context)
-        .platformDispatcher
-        .platformBrightness;
+    final brightness = View.of(context).platformDispatcher.platformBrightness;
 
     MaterialTheme theme =
-    MaterialTheme(createTextTheme(context, "Quicksand", "Poppins"));
+        MaterialTheme(createTextTheme(context, "Poppins", "Montserrat"));
 
     return BlocProvider(
       create: (context) => PasswordBloc(di.sl()),

@@ -34,6 +34,13 @@ class PasswordEntryDataSource {
     await passwordEntryBox.close();
   }
 
+  Future<void> addAll(List<PasswordEntry> entries) async {
+    final Box<PasswordEntry> passwordEntryBox =
+        await Hive.openBox('passwordEntryBox');
+    await passwordEntryBox.addAll(entries);
+    await passwordEntryBox.close();
+  }
+
   Future<void> updatePasswordEntry(PasswordEntry passwordEntry) async {
     final Box<PasswordEntry> passwordEntryBox =
         await Hive.openBox('passwordEntryBox');

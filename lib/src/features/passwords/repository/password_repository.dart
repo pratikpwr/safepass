@@ -24,6 +24,8 @@ abstract class PasswordRepository {
   });
 
   Future<Either<Failure, void>> exportDataToExcel();
+
+  Future<Either<Failure, bool>> importDataFromExcel(String filePath);
 }
 
 class PasswordRepositoryImpl implements PasswordRepository {
@@ -73,8 +75,20 @@ class PasswordRepositoryImpl implements PasswordRepository {
         final passes = await passwordDataSource.getAllPasswords();
         final entries = await passwordEntryDataSource.getAllPasswordEntries();
 
-        await PasswordExporter(passwords: passes, passwordEntries: entries)
-            .exportToExcel();
+        await PasswordExporter()
+            .exportToExcel(passwords: passes, passwordEntries: entries);
         Fluttertoast.showToast(msg: "Exported!!");
+      });
+
+  @override
+  Future<Either<Failure, bool>> importDataFromExcel(String filePath) =>
+      returnRightOrLeft(() async {
+        final importedData = await PasswordExporter().importFromExcel(filePath);
+        final data = await PasswordExporter().processImportedData(importedData);
+
+        await passwordDataSource.addAll(data['passwords'] as List<Password>);
+        await passwordEntryDataSource.addAll(data['entries'] as List<PasswordEntry>);
+        Fluttertoast.showToast(msg: "Imported Successfully!!");
+        return true;
       });
 }

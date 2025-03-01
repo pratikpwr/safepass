@@ -1,6 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:safepass/src/core/app/injection_container.dart';
 import 'package:safepass/src/core/ui/padding.dart';
 import 'package:safepass/src/core/utils/utils.dart';
@@ -33,7 +35,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
             child: CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  title: const Text('SecuPass'),
+                  title: const Text('SafePass'),
                   floating: true,
                   centerTitle: true,
                   actions: [
@@ -190,7 +192,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
           Positioned(
             top: position.dy + size.height,
             right: 10,
-            width: 180,
+            width: 230,
             child: Material(
               elevation: 8,
               borderRadius: BorderRadius.circular(8),
@@ -213,6 +215,39 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildMenuItem(
+                        "Import from Excel",
+                        Icons.file_present_rounded,
+                        () async {
+                          FilePickerResult? result =
+                              await FilePicker.platform.pickFiles(
+                            type: FileType.custom,
+                            allowedExtensions: ['xlsx', 'xls'],
+                          );
+
+                          if (result != null) {
+                            final filePath = result.files.single.path;
+                            if (filePath != null) {
+                              final result = await sl<PasswordRepository>()
+                                  .importDataFromExcel(filePath);
+
+                              result.fold(
+                                (l) => Fluttertoast.showToast(
+                                    msg: "Failed to import data"),
+                                (r) => ctx
+                                    .read<PasswordBloc>()
+                                    .add(FetchPasswordsEvent()),
+                              );
+                            } else {
+                              Fluttertoast.showToast(msg: "Failed to get file");
+                            }
+                          } else {
+                            Fluttertoast.showToast(msg: "Failed to get file");
+                          }
+
+                          _removeOverlay();
+                        },
+                      ),
+                      _buildMenuItem(
                         'Export to Excel',
                         Icons.save,
                         () {
@@ -234,6 +269,8 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                                       if (result) {
                                         sl<PasswordRepository>()
                                             .exportDataToExcel();
+
+                                        Navigator.pop(ctx);
                                       }
                                     });
                                   },

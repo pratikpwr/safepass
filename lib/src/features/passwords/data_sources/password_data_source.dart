@@ -40,6 +40,12 @@ class PasswordDataSource {
     await passwordBox.close();
   }
 
+  Future<void> addAll(List<Password> passwords) async {
+    final Box<Password> passwordBox = await Hive.openBox('passwordBox');
+    await passwordBox.addAll(passwords);
+    await passwordBox.close();
+  }
+
   Future<void> markFavourite(String passId) async {
     throw UnimplementedError();
   }

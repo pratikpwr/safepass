@@ -7,44 +7,148 @@ import 'package:path_provider/path_provider.dart';
 import 'package:safepass/src/core/utils/secure_storage.dart';
 import 'package:safepass/src/features/passwords/models/password.dart';
 import 'package:safepass/src/features/passwords/models/password_entry.dart';
+import 'package:uuid/uuid.dart';
 
 class PasswordExporter {
-  final List<Password> passwords;
-  final List<PasswordEntry> passwordEntries;
+  Future<List<Map<String, dynamic>>> importFromExcel(String filePath) async {
+    try {
+      // Read the file
+      final file = File(filePath);
+      if (!await file.exists()) {
+        throw Exception('File not found: $filePath');
+      }
 
-  PasswordExporter({
-    required this.passwords,
-    required this.passwordEntries,
-  });
+      // Load bytes from file
+      final bytes = await file.readAsBytes();
 
-  Future<void> exportToExcel() async {
-    // Create a new Excel workbook
+      // Decode Excel file
+      final excel = Excel.decodeBytes(bytes);
+
+      // Look for the Passwords sheet
+      if (!excel.tables.containsKey('Passwords')) {
+        throw Exception('Excel file does not contain a "Passwords" sheet');
+      }
+
+      final sheet = excel.tables['Passwords']!;
+
+      // Extract headers from the first row
+      final headers = <String>[];
+      for (var i = 0; i < sheet.maxRows; i++) {
+        final cell =
+            sheet.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0));
+        if (cell.value == null) break;
+        headers.add(cell.value.toString().toLowerCase());
+      }
+
+      // Verify required columns exist
+      final requiredColumns = ['Title', 'Username', 'Password', 'Site', 'Notes'];
+      for (final column in requiredColumns) {
+        if (!headers.contains(column.toLowerCase())) {
+          throw Exception('Required column "$column" not found in Excel file');
+        }
+      }
+
+      // Extract data rows
+      final results = <Map<String, dynamic>>[];
+
+      for (var rowIndex = 1; rowIndex < sheet.maxRows; rowIndex++) {
+        // Skip empty rows
+        var isEmpty = true;
+        for (var i = 0; i < headers.length; i++) {
+          final cellValue = sheet
+              .cell(CellIndex.indexByColumnRow(
+                  columnIndex: i, rowIndex: rowIndex))
+              .value;
+          if (cellValue != null && cellValue.toString().isNotEmpty) {
+            isEmpty = false;
+            break;
+          }
+        }
+        if (isEmpty) continue;
+
+        // Extract row data
+        final rowData = <String, dynamic>{};
+        for (var i = 0; i < headers.length; i++) {
+          final cell = sheet.cell(
+              CellIndex.indexByColumnRow(columnIndex: i, rowIndex: rowIndex));
+          rowData[headers[i]] = cell.value?.toString() ?? '';
+        }
+
+        results.add(rowData);
+      }
+
+      return results;
+    } catch (e) {
+      throw Exception('Failed to import passwords: $e');
+    }
+  }
+
+  Future<Map<String, List<dynamic>>> processImportedData(
+    List<Map<String, dynamic>> importedData,
+  ) async {
+    // Group entries by title to create Password categories
+    final groupedByTitle = <String, List<Map<String, dynamic>>>{};
+
+    for (final entry in importedData) {
+      final title = entry['Title'] ?? 'Uncategorized';
+      if (!groupedByTitle.containsKey(title)) {
+        groupedByTitle[title] = [];
+      }
+      groupedByTitle[title]!.add(entry);
+    }
+
+    // Create Password and PasswordEntry objects
+    final passwords = <Password>[];
+    final entries = <PasswordEntry>[];
+
+    for (final title in groupedByTitle.keys) {
+      // Create a Password (category) for this title
+      var uuid = Uuid();
+      final passwordId = uuid.v4();
+      final password = Password(
+        id: passwordId,
+        title: title,
+        entries: [], // We'll fill these IDs after creating the entries
+        isFavourite: false,
+      );
+
+      // Create entries for this password
+      final entryIds = <String>[];
+      for (final entryData in groupedByTitle[title]!) {
+        final entryId = uuid.v4();
+        entryIds.add(entryId);
+
+        // Encrypt the password using your secure storage
+        final encryptedPassword =
+            SecureStorage().encryptData(entryData['password'] ?? '');
+
+        final entry = PasswordEntry(
+          id: entryId,
+          username: entryData['username'] ?? '',
+          password: encryptedPassword,
+          site: entryData['site'] ?? '',
+          parentId: passwordId,
+          note: entryData['notes'],
+        );
+
+        entries.add(entry);
+      }
+
+      // Update the password with entry IDs
+      passwords.add(password.copyWith(entries: entryIds));
+    }
+
+    return {
+      'passwords': passwords,
+      'entries': entries,
+    };
+  }
+
+  Future<void> exportToExcel({
+    required List<Password> passwords,
+    required List<PasswordEntry> passwordEntries,
+  }) async {
     var excel = Excel.createExcel();
-
-    // // Create overview sheet
-    // var overviewSheet = excel['Categories'];
-    //
-    // // Add headers for overview
-    // _addHeaders(overviewSheet,
-    //     ['Category ID', 'Category Title', 'Number of Entries', 'Is Favorite']);
-    //
-    // // Add category data
-    // int row = 1;
-    // for (Password password in passwords) {
-    //   overviewSheet
-    //       .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row))
-    //       .value = TextCellValue(password.id);
-    //   overviewSheet
-    //       .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row))
-    //       .value = TextCellValue(password.title);
-    //   overviewSheet
-    //       .cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: row))
-    //       .value = IntCellValue(password.entries.length);
-    //   overviewSheet
-    //       .cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: row))
-    //       .value = BoolCellValue(password.isFavourite);
-    //   row++;
-    // }
 
     // Create passwords sheet
     var passwordsSheet = excel['Passwords'];
