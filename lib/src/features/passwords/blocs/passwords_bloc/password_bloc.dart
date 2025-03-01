@@ -31,6 +31,8 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     result.fold((failure) {
       emit(PasswordErrorState(failure));
     }, (results) {
+      results.sort((a, b) =>
+          a.title.toLowerCase().compareTo(b.title.toLowerCase()) ?? 0);
       emit(PasswordLoaded(results));
     });
   }

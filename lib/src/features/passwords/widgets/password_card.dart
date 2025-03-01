@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safepass/src/core/extension/string_extension.dart';
 import 'package:safepass/src/core/utils/utils.dart';
 
 import '../../../core/extension/context_extension.dart';
@@ -51,7 +52,7 @@ class _PasswordCardState extends State<PasswordCard> {
                 ),
                 child: Text(
                   widget.password.title.isNotEmpty
-                      ? widget.password.title[0]
+                      ? widget.password.title[0].toUpperCase()
                       : "",
                   style: context.theme.textTheme.headlineMedium,
                 ),
@@ -59,7 +60,7 @@ class _PasswordCardState extends State<PasswordCard> {
               padding12,
               Expanded(
                 child: Text(
-                  widget.password.title,
+                  widget.password.title.capitalizeFirstLetter(),
                   style: context.theme.textTheme.titleMedium,
                 ),
               ),
