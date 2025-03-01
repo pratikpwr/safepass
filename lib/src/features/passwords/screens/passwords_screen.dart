@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:safepass/src/core/app/injection_container.dart';
-import 'package:safepass/src/core/extension/context_extension.dart';
 
+import '../../../core/app/injection_container.dart';
+import '../../../core/extension/context_extension.dart';
 import '../../../core/ui/padding.dart';
 import '../../../core/utils/utils.dart';
 import '../../password_generator/screens/password_generator_screen.dart';
@@ -76,7 +76,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                                       padding: const EdgeInsets.fromLTRB(
                                           16, 16, 16, 32),
                                       child: Text(
-                                        "Create, save, and manage your passwords so you can easily sign in to sites and apps.",
+                                        "Create, save, and manage your encrypted and secure passwords.",
                                         textAlign: TextAlign.center,
                                         style:
                                             context.theme.textTheme.bodyLarge,
@@ -98,7 +98,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 16, 16),
                                   child: Text(
-                                    "Create, save, and manage your passwords so you can easily sign in to sites and apps.",
+                                    "Create, save, and manage your encrypted and secure passwords.",
                                     textAlign: TextAlign.center,
                                     style: context.theme.textTheme.bodyLarge,
                                   ),
@@ -184,7 +184,7 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                   keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
-                    hintText: 'Search...',
+                    hintText: 'Search',
                     prefixIcon: const Icon(Icons.search_rounded),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.close),
