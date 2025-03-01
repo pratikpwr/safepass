@@ -1,16 +1,56 @@
-# safepass
+# SafePass - Secure Offline Password Manager
 
-Offline Password Storage and Generator
+![SafePass Banner](https://github.com/pratikpwr/safepass/blob/master/ss/safepass.png?raw=true)
 
-## Getting Started
+## 📌 Overview
+SafePass is a secure and offline password manager built with Flutter. It allows users to store and manage their passwords locally with encryption, ensuring maximum security. The app also features an easy-to-use random password generator.
 
-This project is a starting point for a Flutter application.
+## 🎯 Features
+- 🔒 **Offline Security**: All data is stored locally with strong encryption.
+- 🔐 **Encrypted Storage**: Uses secure storage for protecting credentials.
+- 🪪 **Biometric Authentication**: Biometric Authentication to view your credentials.
+- 🔢 **Random Password Generator**: Generates strong, easy-to-remember passwords.
+- 📱 **Intuitive UI**: Simple and user-friendly interface.
 
-A few resources to get you started if this is your first Flutter project:
+## 📸 Screenshots
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+| Home Screen | Password Generator                                                                               | Add Password                                                                   |
+|------------|--------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| ![Home](https://github.com/pratikpwr/safepass/blob/master/ss/1.png?raw=true) | ![Password Generator](https://github.com/pratikpwr/safepass/blob/master/ss/2.png?raw=true) | ![Add Password](https://github.com/pratikpwr/safepass/blob/master/ss/3.png?raw=true) |
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Biometric Authentication                                                                               | Password Details                     | Import & Export Passwords |
+|--------------------------------------------------------------------------------------------------|------------------------------|---------------------------|
+| ![Biometric Authentication](https://github.com/pratikpwr/safepass/blob/master/ss/5.png?raw=true) | ![Password Details](https://github.com/pratikpwr/safepass/blob/master/ss/6.png?raw=true) | ![Import & Export Passwords](https://github.com/pratikpwr/safepass/blob/master/ss/9.png?raw=true)     |
+
+## 🚀 Getting Started
+### Prerequisites
+- Flutter SDK installed ([Download Flutter](https://flutter.dev/docs/get-started/install))
+- Dart SDK
+- Compatible IDE (Android Studio, VS Code, etc.)
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/safepass.git
+cd safepass
+
+# Get dependencies
+flutter pub get
+
+# Run the app
+flutter run
+```
+
+## 🔧 Technologies Used
+- Flutter
+- Dart
+- Secure Storage & Encrypt Package
+- Hive
+- Bloc (State Management)
+
+## 🤝 Contributing
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+## 📩 Contact
+For any queries or support, reach out to me at [pratiksatishpawar@gmail.com](mailto:pratiksatishpawar@gmail.com).
+
