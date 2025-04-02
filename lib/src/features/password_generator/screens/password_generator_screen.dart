@@ -8,7 +8,7 @@ import 'package:safepass/src/features/password_generator/blocs/password_generate
 import 'package:safepass/src/features/passwords/screens/add_password_screen.dart';
 
 class PasswordGeneratorScreen extends StatelessWidget {
-  const PasswordGeneratorScreen({Key? key}) : super(key: key);
+  const PasswordGeneratorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

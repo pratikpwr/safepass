@@ -75,6 +75,15 @@ class _PasswordCardState extends State<PasswordCard> {
                 ),
                 padding8,
               ],
+              IconButton(
+                icon: Icon(
+                  widget.password.isFavourite ? Icons.favorite : Icons.favorite_border,
+                  color: widget.password.isFavourite ? Colors.red : null,
+                ),
+                onPressed: () {
+                  context.read<PasswordBloc>().add(ToggleFavoriteStatusEvent(widget.password.id));
+                },
+              ),
               Icon(
                 Icons.chevron_right_rounded,
                 size: 32,

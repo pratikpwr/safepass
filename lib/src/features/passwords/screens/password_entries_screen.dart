@@ -16,7 +16,7 @@ import '../models/password.dart';
 class PasswordDetailScreen extends StatefulWidget {
   final Password password;
 
-  PasswordDetailScreen({super.key, required this.password});
+  const PasswordDetailScreen({super.key, required this.password});
 
   @override
   State<PasswordDetailScreen> createState() => _PasswordDetailScreenState();
@@ -276,8 +276,9 @@ class _PasswordEntryCardState extends State<PasswordEntryCard> {
                 padding16,
                 ElevatedButton(
                   onPressed: () {
-                    context.read<PasswordEntryBloc>()
-                      ..add(DeletePasswordEntry(widget.entry));
+                    context
+                        .read<PasswordEntryBloc>()
+                        .add(DeletePasswordEntry(widget.entry));
                     if (widget.password.entries.length == 1) {
                       // only single entry so go back and fetch passwords again
                       Future.delayed(Duration(seconds: 1)).then((_) {

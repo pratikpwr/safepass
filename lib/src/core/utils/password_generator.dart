@@ -22,7 +22,9 @@ class PasswordGenerator {
     if (password.length >= 8) score++;
     if (password.length >= 12) score++;
     if (password.contains(RegExp(r'[A-Z]')) &&
-        password.contains(RegExp(r'[a-z]'))) score++;
+        password.contains(RegExp(r'[a-z]'))) {
+      score++;
+    }
     if (password.contains(RegExp(r'[0-9]'))) score++;
     if (password.contains(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'))) score++;
 

@@ -19,9 +19,33 @@ class PasswordsScreen extends StatefulWidget {
   State<PasswordsScreen> createState() => _PasswordsScreenState();
 }
 
-class _PasswordsScreenState extends State<PasswordsScreen> {
+class _PasswordsScreenState extends State<PasswordsScreen> with SingleTickerProviderStateMixin {
   OverlayEntry? _overlayEntry;
   final GlobalKey _optionsButtonKey = GlobalKey();
+  late TabController _tabController;
+  bool searchActive = false;
+  final _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        if (_tabController.index == 0) {
+          context.read<PasswordBloc>().add(FetchPasswordsEvent());
+        } else {
+          context.read<PasswordBloc>().add(FetchFavouritePasswordsEvent());
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +100,9 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                                       padding: const EdgeInsets.fromLTRB(
                                           16, 16, 16, 32),
                                       child: Text(
-                                        "Create, save, and manage your encrypted and secure passwords.",
+                                        state.isFavourites
+                                            ? "You don't have any favorite passwords yet. Mark passwords as favorites to see them here."
+                                            : "Create, save, and manage your encrypted and secure passwords.",
                                         textAlign: TextAlign.center,
                                         style:
                                             context.theme.textTheme.bodyLarge,
@@ -98,7 +124,9 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 16, 16),
                                   child: Text(
-                                    "Create, save, and manage your encrypted and secure passwords.",
+                                    state.isFavourites
+                                        ? "Your favorite passwords"
+                                        : "Create, save, and manage your encrypted and secure passwords.",
                                     textAlign: TextAlign.center,
                                     style: context.theme.textTheme.bodyLarge,
                                   ),
@@ -160,9 +188,6 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
     );
   }
 
-  bool searchActive = false;
-  final _searchController = TextEditingController();
-
   SliverAppBar buildSliverAppBar(BuildContext context) {
     return SliverAppBar(
       title: const Text('SafePass'),
@@ -207,7 +232,19 @@ class _PasswordsScreenState extends State<PasswordsScreen> {
                 ),
               ),
             )
-          : null,
+          : PreferredSize(
+              preferredSize: Size.fromHeight(48),
+              child: TabBar(
+                controller: _tabController,
+                tabs: [
+                  Tab(text: 'All Passwords'),
+                  Tab(text: 'Favorites'),
+                ],
+                indicatorColor: Theme.of(context).colorScheme.primary,
+                labelColor: Theme.of(context).colorScheme.primary,
+                unselectedLabelColor: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
       actions: [
         if (!searchActive)
           IconButton(

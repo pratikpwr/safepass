@@ -22,6 +22,7 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     on<AddPasswordEvent>(_onAddPassword);
     on<SearchPassword>(_onSearchPassword);
     on<ImportPasswordsEvent>(_onImportPasswordsEvent);
+    on<ToggleFavoriteStatusEvent>(_onToggleFavoriteStatus);
   }
 
   Future<void> _onSearchPassword(
@@ -115,6 +116,20 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
         results,
         isFavourites: true,
       ));
+    });
+  }
+
+  FutureOr<void> _onToggleFavoriteStatus(
+      ToggleFavoriteStatusEvent event, Emitter<PasswordState> emit) async {
+    emit(PasswordLoading());
+
+    final result = await repository.markFavourite(passId: event.passwordId);
+
+    result.fold((failure) {
+      emit(PasswordErrorState(failure));
+    }, (_) {
+      // Refresh the passwords list after toggling favorite status
+      add(FetchPasswordsEvent());
     });
   }
 }

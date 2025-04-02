@@ -24,3 +24,10 @@ class AddPasswordEvent extends PasswordEvent {
 }
 
 class ImportPasswordsEvent extends PasswordEvent {}
+
+// New event to toggle favorite status
+class ToggleFavoriteStatusEvent extends PasswordEvent {
+  final String passwordId; // Use the unique ID of the password
+
+  ToggleFavoriteStatusEvent(this.passwordId);
+}

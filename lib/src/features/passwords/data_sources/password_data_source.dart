@@ -56,14 +56,31 @@ class PasswordDataSource {
   }
 
   Future<void> markFavourite(String passId) async {
-    throw UnimplementedError();
+    final Box<Password> passwordBox = await Hive.openBox('passwordBox');
+
+    // Retrieve the password by its ID
+    Password? password = passwordBox.values.firstWhereOrNull((item) => item.id == passId);
+
+    if (password != null) {
+      // Create a new password with toggled isFavourite property
+      Password updatedPassword = password.copyWith(
+        isFavourite: !password.isFavourite,
+      );
+
+      // Save the updated password back to the box
+      await passwordBox.put(password.id, updatedPassword);
+    } else {
+      throw NotFoundException();
+    }
+
+    await passwordBox.close();
   }
 
   Future<void> updatePassword(Password password) async {
     final Box<Password> passwordBox = await Hive.openBox('passwordBox');
     await passwordBox.put(password.id, password);
     await passwordBox.close();
-  }
+}
 
   Future<void> deletePassword(String id) async {
     final Box<Password> passwordBox = await Hive.openBox('passwordBox');

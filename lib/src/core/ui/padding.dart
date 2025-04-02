@@ -54,3 +54,28 @@ const padding64 = SizedBox(
   height: 64,
   width: 64,
 );
+
+const padding72 = SizedBox(
+  height: 72,
+  width: 72,
+);
+
+const padding80 = SizedBox(
+  height: 80,
+  width: 80,
+);
+
+const padding96 = SizedBox(
+  height: 96,
+  width: 96,
+);
+
+const padding128 = SizedBox(
+  height: 128,
+  width: 128,
+);
+
+const padding144 = SizedBox(
+  height: 144,
+  width: 144,
+);

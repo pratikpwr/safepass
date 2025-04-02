@@ -5,7 +5,7 @@ import 'package:safepass/src/core/ui/padding.dart';
 
 class LabelledTextFieldItem extends StatelessWidget {
   const LabelledTextFieldItem({
-    Key? key,
+    super.key,
     this.title,
     this.hintText,
     this.controller,
@@ -21,7 +21,7 @@ class LabelledTextFieldItem extends StatelessWidget {
     this.textAlignment = TextAlign.start,
     this.suffix,
     this.enabled,
-  }) : super(key: key);
+  });
 
   final String? title;
   final String? hintText;
