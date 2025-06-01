@@ -15,7 +15,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
-  fluttertoast: ^8.2.8
+  fluttertoast: ^8.2.12
   flutter_svg: ^2.0.16
 
   get_it: ^8.0.2
